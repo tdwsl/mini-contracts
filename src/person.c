@@ -41,17 +41,19 @@ navPerson(struct person *p, int tx, int ty)
     if(p->x == tx && p->y == ty)
         return;
 
-    if((p->x == tx && p->y >= ty-1 && p->y <= ty+1) ||
+    /*if((p->x == tx && p->y >= ty-1 && p->y <= ty+1) ||
             (p->y == ty && p->x >= tx-1 && p->x <= tx+1)) {
         tryMove(&p->x, &p->y, &p->d, tx, ty);
         return;
-    }
+    }*/
 
     for(i = 0; i < mapW*mapH; i++)
-        pathMap[i] = (!spaceFree(i%mapW, i/mapW))*-1;
+        pathMap[i] = (!spaceFree(i%mapW, i/mapW)||map[i]%8==6)*-1;
 
-    pathMap[ty*mapW+tx] = 1;
     pathMap[p->y*mapW+p->x] = 0;
+    if(map[player_y*mapW+player_x]%8 != 6)
+        pathMap[player_y*mapW+player_x] = 0;
+    pathMap[ty*mapW+tx] = 1;
 
     for(g = 0; g < 30 && !pathMap[p->y*mapW+p->x]; g++) {
         for(i = 0; i < mapW*mapH; i++) {
@@ -79,24 +81,24 @@ navPerson(struct person *p, int tx, int ty)
             printf("\n");
     }*/
 
-    if(!pathMap[p->y*mapW+p->x]) {
-        for(i = 0; i < 4; i++)
-            if(spaceFree(p->x+dirs[i*2], p->y+dirs[i*2+1])) {
-                tryMove(&p->x, &p->y, &p->d,
-                        p->x+dirs[i*2], p->y+dirs[i*2+1]);
+    if(pathMap[p->y*mapW+p->x]) {
+        for(i = 0; i < 4; i++) {
+            dx = p->x+dirs[i*2];
+            dy = p->y+dirs[i*2+1];
+            if(dx < 0 || dy < 0 || dx >= mapW || dy >= mapH)
+                continue;
+            if(pathMap[dy*mapW+dx] > 0) {
+                if(!spaceFree(dx, dy)) break;
+                tryMove(&p->x, &p->y, &p->d, dx, dy);
                 return;
             }
-        return;
-    }
-
-    for(i = 0; i < 4; i++) {
-        dx = p->x+dirs[i*2];
-        dy = p->y+dirs[i*2+1];
-        if(dx < 0 || dy < 0 || dx >= mapW || dy >= mapH)
-            continue;
-        if(pathMap[dy*mapW+dx] > 0) {
-            tryMove(&p->x, &p->y, &p->d, dx, dy);
-            return;
         }
     }
+
+    for(i = 0; i < 4; i++)
+        if(spaceFree(p->x+dirs[i*2], p->y+dirs[i*2+1])) {
+            tryMove(&p->x, &p->y, &p->d,
+                    p->x+dirs[i*2], p->y+dirs[i*2+1]);
+            return;
+        }
 }

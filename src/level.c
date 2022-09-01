@@ -52,6 +52,7 @@ scanPath(FILE *fp, struct path *p)
         } else if(!strcmp(buf, "march")) {
             s->ins = PATH_MARCH;
         } else if(!strcmp(buf, "end")) {
+            p->length--;
             break;
         } else {
             printf("path - invalid step %s!\n", buf);

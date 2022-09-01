@@ -26,7 +26,7 @@ draw()
     struct person *p;
     SDL_Rect src, dst;
 
-    SDL_GetWindowSize(window, &w, &h);
+    getWindowSize(window, &w, &h);
     display = SDL_GetWindowSurface(window);
 
     src.w = 48;
@@ -34,11 +34,12 @@ draw()
     src.x = 0;
     src.y = 16;
 
+    /* bg */
     for(y = -32; y <= h+32; y += 32)
         for(x = -48; x <= w+48; x += 48) {
             dst.x = x+g_bgX/BGMOVE_RES;
             dst.y = y+g_bgY/BGMOVE_RES;
-            SDL_BlitSurface(s_ui, &src, display, &dst);
+            blitSurface(s_ui, &src, display, &dst);
         }
 
     g_dCamX = (-player_x*16)*CAMMOVE_RES;
@@ -60,7 +61,7 @@ draw()
                 continue;
 
             /* tiles */
-            SDL_BlitSurface(s_tileset, &src, display, &dst);
+            blitSurface(s_tileset, &src, display, &dst);
 
             /* zone borders */
             if(zoneMap[y*mapW+x] && !(map[y*mapW+x]%8)) {
@@ -75,7 +76,7 @@ draw()
                         if(zoneMap[dy*mapW+dx] == zoneMap[y*mapW+x])
                             continue;
                     src.x = i*16;
-                    SDL_BlitSurface(s_zone, &src, display, &dst);
+                    blitSurface(s_zone, &src, display, &dst);
                 }
                 src.h = 16;
             }
@@ -85,9 +86,9 @@ draw()
         if(player_y == y) {
             dst.x = player_x*16+xo;
             src = (SDL_Rect){player_d*16, player_outfit*16, 16, 16};
-            SDL_BlitSurface(s_outfit, &src, display, &dst);
+            blitSurface(s_outfit, &src, display, &dst);
             src = (SDL_Rect){player_d*16, 32, 16, 16};
-            SDL_BlitSurface(s_player, &src, display, &dst);
+            blitSurface(s_player, &src, display, &dst);
         }
 
         /* npc */
@@ -95,18 +96,18 @@ draw()
             if(person_arr[i].y != y) continue;
             p = &person_arr[i];
 
-            if(p->state & (PSTATE_DEAD|PSTATE_SLEEP))
+            if(p->state == PSTATE_DEAD || p->state == PSTATE_SLEEP)
                 dx = 64;
             else
                 dx = p->d*16;
 
             dst.x = p->x*16+xo;
             src = (SDL_Rect){dx, p->outfit*16, 16, 16};
-            SDL_BlitSurface(s_outfit, &src, display, &dst);
+            blitSurface(s_outfit, &src, display, &dst);
             src = (SDL_Rect){dx, p->head*32, 16, 16};
-            if(p->state & PSTATE_GUN)
+            if(p->state == PSTATE_GUN)
                 src.y += 16;
-            SDL_BlitSurface(s_head, &src, display, &dst);
+            blitSurface(s_head, &src, display, &dst);
         }
     }
 
@@ -161,7 +162,7 @@ updatePerson(struct person *p)
                 p->x+dirs[p->d*2], p->y+dirs[p->d*2+1]);
         if(p->x == x && p->y == y)
             p->state = PSTATE_NORMAL;
-    } else if(p->state == PSTATE_SLEEP || p->state == PSTATE_SLEEP) {
+    } else if(p->state == PSTATE_WAIT || p->state == PSTATE_SLEEP) {
         p->counter--;
         if(p->counter <= 0)
             p->state = PSTATE_NORMAL;

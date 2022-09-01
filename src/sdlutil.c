@@ -4,6 +4,7 @@
 
 SDL_Window *window;
 SDL_Surface *display;
+int g_scale = 2;
 
 SDL_Surface *s_head;
 SDL_Surface *s_outfit;
@@ -51,15 +52,63 @@ SDL_Surface*
 loadSurface(const char *filename)
 {
     SDL_Surface *orig;
-    SDL_Surface *newSurf;
+    SDL_Surface *surf;
+    SDL_Surface *scaled;
+    SDL_Rect r;
 
     orig = SDL_LoadBMP(filename);
     assert(orig);
 
-    newSurf = SDL_ConvertSurface(orig, display->format, 0);
-    assert(newSurf);
+    surf = SDL_ConvertSurface(orig, display->format, 0);
+    assert(surf);
     SDL_FreeSurface(orig);
-    SDL_SetColorKey(newSurf, SDL_TRUE, SDL_MapRGB(newSurf->format,
+
+    if(g_scale != 1) {
+        r = (SDL_Rect){0, 0, surf->w*g_scale, surf->h*g_scale};
+        scaled = SDL_CreateRGBSurface(surf->flags,
+                surf->w*g_scale, surf->h*g_scale, 32,
+                surf->format->Rmask,surf->format->Gmask,surf->format->Bmask,
+                surf->format->Amask);
+        assert(scaled);
+        SDL_BlitScaled(surf, 0, scaled, &r);
+        SDL_FreeSurface(surf);
+        surf = scaled;
+    }
+
+    SDL_SetColorKey(surf, SDL_TRUE, SDL_MapRGB(surf->format,
             0xff, 0x00, 0xff));
-    return newSurf;
+
+    return surf;
+}
+
+void
+blitSurface(SDL_Surface *s1, SDL_Rect *r1, SDL_Surface *s2, SDL_Rect *r2)
+{
+    SDL_Rect src, dst;
+
+    if(g_scale == 1)
+        SDL_BlitSurface(s1, r1, s2, r2);
+    else {
+        dst = *r2;
+        dst.x *= g_scale;
+        dst.y *= g_scale;
+
+        if(r1) {
+            src = *r1;
+            src.w *= g_scale;
+            src.h *= g_scale;
+            src.x *= g_scale;
+            src.y *= g_scale;
+            SDL_BlitSurface(s1, &src, s2, &dst);
+        } else
+            SDL_BlitSurface(s1, 0, s2, &dst);
+    }
+}
+
+void
+getWindowSize(SDL_Window *win, Uint32 *w, Uint32 *h)
+{
+    SDL_GetWindowSize(win, w, h);
+    if(w) *w /= g_scale;
+    if(h) *h /= g_scale;
 }
