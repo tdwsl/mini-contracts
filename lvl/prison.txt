@@ -1,0 +1,99 @@
+/*
+ * prison level, kill target and escape prison
+ */
+
+map 13 18
+1 0 1 1 1 1 1 1 1 1 1 1 1
+1 0 0 0 1 0 0 0 1 0 0 0 1
+1 0 0 0 1 0 0 0 1 0 0 0 1
+1 0 0 0 1 1 1 0 1 1 0 1 1
+1 0 0 0 0 0 0 0 0 0 0 0 1
+1 1 1 0 1 0 0 0 0 0 0 0 1
+1 0 0 0 1 1 1 0 1 1 0 1 1
+1 6 0 0 1 0 0 0 1 0 0 0 1
+1 6 0 0 1 0 0 6 1 0 0 0 1
+1 1 2 1 1 1 1 1 1 1 1 1 1
+1 0 0 0 1 0 1 0 1 0 1 0 1
+1 0 1 1 1 0 1 0 1 0 1 0 1
+1 0 0 7 1 4 1 4 1 4 1 2 1
+1 0 0 0 3 0 0 0 0 0 0 0 1
+1 0 0 0 1 4 1 4 1 4 1 4 1
+1 0 0 0 1 0 1 0 1 0 1 0 1
+1 0 0 0 1 0 1 0 1 0 1 0 1
+1 1 1 1 1 1 1 1 1 1 1 1 1
+
+0 0 0 0 0 0 0 0 0 0 0 0 0
+0 2 2 2 0 2 2 2 0 2 2 2 0
+0 2 2 2 0 2 2 2 0 2 2 2 0
+0 2 2 2 0 0 0 2 0 0 2 0 0
+0 2 2 2 2 2 2 2 2 2 2 2 0
+0 0 0 2 0 2 2 2 2 2 2 2 0
+0 2 2 2 0 0 0 2 0 0 2 0 0
+0 2 2 2 0 2 2 2 0 2 2 2 0
+0 2 2 2 0 2 2 2 0 2 2 2 0
+0 0 2 0 0 0 0 0 0 0 0 0 0
+0 1 1 1 0 0 0 0 0 0 0 0 0
+0 1 1 1 0 0 0 0 0 0 0 0 0
+0 1 1 1 0 0 0 0 0 0 0 0 0
+0 1 1 1 1 1 1 1 1 1 1 1 0
+0 1 1 1 0 0 0 0 0 0 0 0 0
+0 1 1 1 0 0 0 0 0 0 0 0 0
+0 1 1 1 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0
+
+exit 1 0
+spawn 11 10
+
+info 11 11
+  Good news, agent 29 - we're pulling you out of retirement. \n
+  Your target is a high security prisoner. \n
+  They are accompanied by an undercover agent. \n
+  Good luck. \n
+end-info
+
+access 3 1
+access 7 2
+access 7 1
+access 6 2
+guard 3 1
+guard 7 2
+can-gun 7
+can-shoot 7 6
+can-shoot 7 5
+
+person 1 12
+outfit 3
+head 0
+path
+  goto 3 10
+  goto 1 12
+  goto 11 12
+  goto 1 12
+end
+
+person 9 1
+outfit 6
+head 3
+target
+path
+  wait 4
+  goto 9 4
+  wait 2
+  goto 9 1
+end
+
+person 8 4
+outfit 6
+head 0
+facing 0
+
+person 8 5
+outfit 6
+head 0
+facing 2
+
+person 10 1
+outfit 6
+head 1
+facing 0
+hostile
