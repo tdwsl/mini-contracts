@@ -7,11 +7,12 @@
 enum {
     PSTATE_NORMAL,
     PSTATE_DEAD,
-    PSTATE_SLEEPING,
-    PSTATE_WAITING,
+    PSTATE_SLEEP,
+    PSTATE_WAIT,
     PSTATE_GOTO,
     PSTATE_GUN,
     PSTATE_KNIFE,
+    PSTATE_MARCH,
 };
 
 enum {
@@ -39,7 +40,7 @@ struct path {
 };
 
 struct person {
-    int x, y, dx, dy, tx, ty;
+    int x, y, tx, ty;
     char d;
     int counter;
     char state, flags;
@@ -56,5 +57,9 @@ const static char dirs[] = {
     0, -1,
     -1, 0,
 };
+
+char getDir(int x, int y);
+void navPerson(struct person *p, int tx, int ty);
+void tryMove(int *x, int *y, char *d, int dx, int dy);
 
 #endif

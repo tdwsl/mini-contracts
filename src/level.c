@@ -8,6 +8,7 @@
 
 char map[MAP_MAX];
 char zoneMap[MAP_MAX];
+char pathMap[MAP_MAX];
 int mapW, mapH;
 struct info info_arr[INFO_MAX];
 int info_num;
@@ -192,8 +193,10 @@ loadLevel(const char *filename)
             exit_num++;
         } else if(!strcmp(buf, "info")) {
             scanInfo(fp, &info_arr[info_num++]);
-        } else if(!strcmp(buf, "spawn")) {
+        } else if(!strcmp(buf, "player")) {
             fscanf(fp, "%d%d", &player_x, &player_y);
+        } else if(!strcmp(buf, "player-outfit")) {
+            fscanf(fp, "%d", &player_outfit);
         } else if(!strcmp(buf, "/*")) {
             comment = 1;
         } else {
@@ -201,4 +204,27 @@ loadLevel(const char *filename)
             exit(1);
         }
     }
+}
+
+bool
+spaceFree(int x, int y)
+{
+    int t, i;
+
+    if(x < 0 || y < 0 || x >= mapW || y >= mapH)
+        return 0;
+
+    if(x == player_x && y == player_y)
+        return 0;
+
+    t = map[y*mapW+x] % 8;
+    if(t == 1 || t == 4 || t == 5 || t == 7)
+        return 0;
+
+    for(i = 0; i < person_num; i++) {
+        if(person_arr[i].x == x && person_arr[i].y == y)
+            return 0;
+    }
+
+    return 1;
 }

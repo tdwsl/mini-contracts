@@ -7,6 +7,8 @@
 #define RULE_MAX 20
 #define EXIT_MAX 8
 
+#include <stdbool.h>
+
 enum {
     RULE_CANGUN,
     RULE_CANKNIFE,
@@ -32,6 +34,7 @@ struct exit {
 
 extern char map[];
 extern char zoneMap[];
+extern char pathMap[];
 extern int mapW, mapH;
 extern struct info info_arr[];
 extern int info_num;
@@ -43,5 +46,6 @@ extern int player_x, player_y, player_outfit;
 extern char player_d, player_state;
 
 void loadLevel(const char *filename);
+bool spaceFree(int x, int y);
 
 #endif
